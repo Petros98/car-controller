@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    buildCache {
+        local {
+            enabled = false
+        }
+        remote(HttpBuildCache) {
+            enabled = true
+            url = 'https://example.com:8123/cache/'
+        }
+    }
+}
+rootProject.name = "Car Controller"
+include ':app'

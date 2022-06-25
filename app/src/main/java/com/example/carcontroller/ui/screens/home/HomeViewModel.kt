@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.carcontroller.data.MockData
 import com.example.carcontroller.model.DoorsLockStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +31,10 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         const val DOORS_LOCKING_DELAY = 5000L
     }
 
-    val vehicles by mutableStateOf(MockData.vehicles)
+    private var job: Job? = null
+
+    var vehicles by mutableStateOf(MockData.vehicles)
+        private set
 
     var currentVehicle by mutableStateOf(vehicles.first())
         private set
@@ -39,6 +43,9 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         private set
 
     fun onCurrentVehicleChange(page: Int) {
+        if (job?.isActive == true) {
+            job?.cancel()
+        }
         currentVehicle = vehicles[page]
     }
 
@@ -63,7 +70,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onLockDoors() {
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             startDoorsLocking()
             delay(DOORS_LOCKING_DELAY)
             lockDoors()
@@ -71,7 +78,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onUnlockDoors() {
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             startDoorsUnlocking()
             delay(DOORS_LOCKING_DELAY)
             unlockDoors()
@@ -92,6 +99,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         currentVehicle = currentVehicle.copy(
             doors = currentVehicle.doors.copy(status = DoorsLockStatus.LOCKED)
         )
+        updateVehicles()
     }
 
     private fun startDoorsUnlocking() {
@@ -104,5 +112,17 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         currentVehicle = currentVehicle.copy(
             doors = currentVehicle.doors.copy(status = DoorsLockStatus.UNLOCKED)
         )
+        updateVehicles()
+    }
+
+    private fun updateVehicles() {
+        viewModelScope.launch {
+            vehicles = vehicles.toMutableList().apply {
+                val index = indexOf(vehicles.find { it.id == currentVehicle.id })
+                if (index != -1) {
+                    set(index, currentVehicle)
+                }
+            }
+        }
     }
 }

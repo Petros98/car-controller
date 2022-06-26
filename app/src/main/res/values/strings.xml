@@ -6,4 +6,11 @@
     <string name="settings">Settings</string>
     <string name="yes_button_title">Yes</string>
     <string name="cancel_button_title">Cancel</string>
+    <string name="doors_locked_message">Doors locked</string>
+    <string name="doors_unlocked_message">Doors unlocked</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="doors">Doors</string>
+    <string name="engine">Engine</string>
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
 </resources>

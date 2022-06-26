@@ -1,4 +1,4 @@
-package com.example.carcontroller.ui
+package com.example.carcontroller.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -10,6 +10,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.carcontroller.domain.enums.MenuSections
+import com.example.carcontroller.ui.theme.PADDING_EXTRA_SMALL
 
 @Composable
 fun BottomNavigation(navController: NavController) {
@@ -35,7 +37,7 @@ fun BottomNavigation(navController: NavController) {
                             )
                         }
                         Icon(
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = PADDING_EXTRA_SMALL),
                             imageVector = item.icon,
                             contentDescription = stringResource(item.title)
                         )

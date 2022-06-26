@@ -1,4 +1,4 @@
-package com.example.carcontroller.model
+package com.example.carcontroller.domain.entity
 
 data class Distance(
     val length: Int,

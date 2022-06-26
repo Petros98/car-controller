@@ -12,14 +12,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.carcontroller.ui.BottomNavigation
-import com.example.carcontroller.ui.MenuSections
+import com.example.carcontroller.base.managers.SnackbarManager
+import com.example.carcontroller.domain.enums.MenuSections
+import com.example.carcontroller.ui.components.BottomNavigation
+import com.example.carcontroller.ui.components.Snackbar
 import com.example.carcontroller.ui.screens.home.HomeScreen
 import com.example.carcontroller.ui.theme.CarControllerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,6 +40,12 @@ private fun MainContent() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavigation(navController)
+        },
+        snackbarHost = {
+            Snackbar(
+                snackbarHostState = SnackbarManager.snackbarHostState,
+                modifier = Modifier
+            )
         }
     ) { paddingValues ->
         NavGraph(modifier = Modifier.padding(paddingValues), navController = navController)

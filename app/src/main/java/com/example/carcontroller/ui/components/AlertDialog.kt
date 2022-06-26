@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,19 +11,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.carcontroller.R
 import com.example.carcontroller.ui.theme.Blue
+import com.example.carcontroller.ui.theme.PADDING_MEDIUM
+import com.example.carcontroller.ui.theme.Shapes
 import com.example.carcontroller.ui.theme.White
 
 @Composable
 fun AlertDialog(
     title: String,
     message: String?,
+    modifier: Modifier = Modifier,
     negativeButtonText: String = stringResource(R.string.cancel_button_title),
     positiveButtonText: String = stringResource(R.string.yes_button_title),
     onDismiss: () -> Unit = {},
     onPositiveButtonClick: () -> Unit = {}
 ) {
     AlertDialog(
-        shape = RoundedCornerShape(8.dp),
+        shape = Shapes.medium,
         title = {
             HeaderText(text = title)
         },
@@ -34,18 +36,17 @@ fun AlertDialog(
         onDismissRequest = onDismiss,
         buttons = {
             Row(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(PADDING_MEDIUM),
                 horizontalArrangement = Arrangement.End
             ) {
                 NegativeButton(
+                    negativeButtonText = negativeButtonText,
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    onDismiss = onDismiss,
-                    negativeButtonText = negativeButtonText
+                    onDismiss = onDismiss
                 )
                 PositiveButton(
-                    modifier = Modifier,
                     onPositiveButtonClick = onPositiveButtonClick,
                     positiveButtonText = positiveButtonText
                 )
@@ -56,9 +57,9 @@ fun AlertDialog(
 
 @Composable
 private fun PositiveButton(
-    modifier: Modifier,
-    onPositiveButtonClick: () -> Unit,
-    positiveButtonText: String
+    positiveButtonText: String,
+    modifier: Modifier = Modifier,
+    onPositiveButtonClick: () -> Unit
 ) {
     Button(
         modifier = modifier,
@@ -73,7 +74,11 @@ private fun PositiveButton(
 }
 
 @Composable
-private fun NegativeButton(modifier: Modifier, onDismiss: () -> Unit, negativeButtonText: String) {
+private fun NegativeButton(
+    negativeButtonText: String,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit
+) {
     TextButton(modifier = modifier, onClick = onDismiss) {
         Text(
             text = negativeButtonText,

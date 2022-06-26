@@ -1,4 +1,4 @@
-package com.example.carcontroller.model
+package com.example.carcontroller.domain.enums
 
 import androidx.compose.ui.graphics.Color
 import com.example.carcontroller.ui.theme.Black

@@ -1,4 +1,4 @@
-package com.example.carcontroller.ui
+package com.example.carcontroller.domain.enums
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons

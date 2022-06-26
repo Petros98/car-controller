@@ -1,12 +1,14 @@
 package com.example.carcontroller.ui.screens.home
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carcontroller.R
 import com.example.carcontroller.data.MockData
-import com.example.carcontroller.model.DoorsLockStatus
+import com.example.carcontroller.domain.entity.DoorsLockStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +19,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor() : ViewModel() {
 
     data class AlertDialogState(
-        val title: String,
+        @StringRes val titleRes: Int,
         val message: String,
         val action: DialogAction
     )
@@ -42,6 +44,8 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     var alertDialogState by mutableStateOf<AlertDialogState?>(null)
         private set
 
+    var snackbarMessage by mutableStateOf<Int?>(null)
+
     fun onCurrentVehicleChange(page: Int) {
         if (job?.isActive == true) {
             job?.cancel()
@@ -52,7 +56,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     fun askForLockDoors() {
         if (!currentVehicle.doors.isBusy && currentVehicle.doors.status != DoorsLockStatus.LOCKED) {
             alertDialogState = AlertDialogState(
-                title = "Are you sure?",
+                titleRes = R.string.are_you_sure,
                 message = "Please confirm that you want to lock the doors of \"${currentVehicle.model}\"",
                 action = DialogAction.LOCK
             )
@@ -62,9 +66,9 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     fun askForUnlockDoors() {
         if (!currentVehicle.doors.isBusy && currentVehicle.doors.status != DoorsLockStatus.UNLOCKED) {
             alertDialogState = AlertDialogState(
-                title = "Are you sure?",
+                titleRes = R.string.are_you_sure,
                 message = "Please confirm that you want to unlock the doors of \"${currentVehicle.model}\"",
-                action = DialogAction.LOCK
+                action = DialogAction.UNLOCK
             )
         }
     }
@@ -99,6 +103,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         currentVehicle = currentVehicle.copy(
             doors = currentVehicle.doors.copy(status = DoorsLockStatus.LOCKED)
         )
+        snackbarMessage = R.string.doors_locked_message
         updateVehicles()
     }
 
@@ -112,6 +117,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         currentVehicle = currentVehicle.copy(
             doors = currentVehicle.doors.copy(status = DoorsLockStatus.UNLOCKED)
         )
+        snackbarMessage = R.string.doors_unlocked_message
         updateVehicles()
     }
 

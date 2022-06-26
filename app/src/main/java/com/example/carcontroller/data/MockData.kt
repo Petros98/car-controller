@@ -1,7 +1,7 @@
 package com.example.carcontroller.data
 
 import com.example.carcontroller.R
-import com.example.carcontroller.model.*
+import com.example.carcontroller.domain.entity.*
 
 object MockData {
     val vehicles = listOf(

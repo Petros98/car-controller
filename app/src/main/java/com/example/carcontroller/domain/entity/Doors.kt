@@ -1,4 +1,6 @@
-package com.example.carcontroller.model
+package com.example.carcontroller.domain.entity
+
+import com.example.carcontroller.domain.enums.ViewState
 
 data class Doors(
     val status: DoorsLockStatus

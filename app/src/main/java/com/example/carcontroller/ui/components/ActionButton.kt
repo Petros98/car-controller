@@ -17,20 +17,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.carcontroller.model.ViewState
+import com.example.carcontroller.domain.enums.ViewState
 import com.example.carcontroller.ui.theme.Brown
+import com.example.carcontroller.ui.theme.ELEVATION_SMALL
 
 @Composable
 fun ActionButton(
-    modifier: Modifier = Modifier,
     state: ViewState,
-    onClick: () -> (Unit),
+    modifier: Modifier = Modifier,
     text: String? = null,
-    @DrawableRes iconId: Int? = null
+    @DrawableRes iconId: Int? = null,
+    onClick: () -> (Unit)
 ) {
     Box(
         modifier = modifier
-            .shadow(elevation = 4.dp, CircleShape)
+            .shadow(elevation = ELEVATION_SMALL, CircleShape)
             .background(state.backgroundColor)
             .aspectRatio(1f)
             .clickable(state != ViewState.LOADING || state != ViewState.DISABLED) {

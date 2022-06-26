@@ -5,10 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,15 +19,19 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carcontroller.R
-import com.example.carcontroller.model.ViewState
-import com.example.carcontroller.model.Vehicle
+import com.example.carcontroller.base.managers.SnackbarManager
+import com.example.carcontroller.domain.entity.Vehicle
+import com.example.carcontroller.domain.enums.SnackbarType
+import com.example.carcontroller.domain.enums.ViewState
 import com.example.carcontroller.ui.components.ActionButton
 import com.example.carcontroller.ui.components.AlertDialog
 import com.example.carcontroller.ui.components.HeaderText
+import com.example.carcontroller.ui.theme.*
 import com.google.accompanist.pager.*
 
 @OptIn(ExperimentalPagerApi::class)
@@ -35,7 +42,7 @@ fun HomeScreen(
 ) {
     viewModel.alertDialogState?.let {
         AlertDialog(
-            title = it.title,
+            title = stringResource(it.titleRes),
             message = it.message,
             onPositiveButtonClick = {
                 when (it.action) {
@@ -55,6 +62,17 @@ fun HomeScreen(
         )
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
+    viewModel.snackbarMessage?.let {
+        SnackbarManager.showSnackbar(
+            message = stringResource(it),
+            coroutineScope = coroutineScope,
+            type = SnackbarType.SUCCESS
+        )
+        viewModel.snackbarMessage = null
+    }
+
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         val pagerState = rememberPagerState()
 
@@ -64,14 +82,17 @@ fun HomeScreen(
             }
         }
 
-        TopBar(modifier = Modifier, vehicle = viewModel.currentVehicle)
+        TopBar(vehicle = viewModel.currentVehicle)
 
         VehiclesPager(
-            modifier = Modifier.aspectRatio(2f),
             pagerState = pagerState,
-            vehicles = viewModel.vehicles
+            vehicles = viewModel.vehicles,
+            modifier = Modifier.aspectRatio(2f)
         )
-        VehiclesPagerIndicator(pagerState = pagerState, indicatorsCount = viewModel.vehicles.size)
+        VehiclesPagerIndicator(
+            pagerState = pagerState,
+            indicatorsCount = viewModel.vehicles.size
+        )
         VehicleControlsGridLayout(modifier = Modifier.weight(1f), viewModel = viewModel)
     }
 }
@@ -81,13 +102,13 @@ private fun VehicleControlsGridLayout(modifier: Modifier, viewModel: HomeViewMod
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(PADDING_MEDIUM),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
             VehicleControlsGridItem(
-                title = "Doors",
+                title = stringResource(R.string.doors),
                 subtitle = viewModel.currentVehicle.doors.status.displayText,
                 firstButtonClick = {
                     viewModel.askForLockDoors()
@@ -103,9 +124,9 @@ private fun VehicleControlsGridLayout(modifier: Modifier, viewModel: HomeViewMod
         }
         item {
             VehicleControlsGridItem(
-                title = "Engine",
-                firstButtonText = "START",
-                secondButtonText = "STOP",
+                title = stringResource(R.string.engine),
+                firstButtonText = stringResource(R.string.start),
+                secondButtonText = stringResource(R.string.stop),
                 firstButtonState = viewModel.currentVehicle.engine.state,
                 secondButtonState = viewModel.currentVehicle.engine.state,
             )
@@ -159,7 +180,7 @@ private fun GridItem(
 ) {
     Column(horizontalAlignment = Alignment.Start) {
         Row(
-            modifier = Modifier.padding(vertical = 4.dp),
+            modifier = Modifier.padding(vertical = PADDING_EXTRA_SMALL),
             verticalAlignment = Alignment.CenterVertically
         ) {
             HeaderText(
@@ -183,8 +204,8 @@ private fun GridItem(
         Row(
             modifier = Modifier
                 .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(4.dp)
+                    elevation = ELEVATION_SMALL,
+                    shape = Shapes.small
                 )
                 .background(MaterialTheme.colors.surface),
             content = content
@@ -196,10 +217,11 @@ private fun GridItem(
 @Composable
 private fun VehiclesPagerIndicator(
     pagerState: PagerState,
-    indicatorsCount: Int
+    indicatorsCount: Int,
+    modifier: Modifier = Modifier
 ) {
     HorizontalPagerIndicator(
-        modifier = Modifier.padding(vertical = 16.dp),
+        modifier = modifier.padding(vertical = PADDING_MEDIUM),
         pagerState = pagerState,
         pageCount = indicatorsCount,
         activeColor = MaterialTheme.colors.primaryVariant,
@@ -207,13 +229,17 @@ private fun VehiclesPagerIndicator(
         indicatorHeight = 2.dp,
         indicatorShape = RectangleShape,
         indicatorWidth = 20.dp,
-        spacing = 4.dp
+        spacing = PADDING_EXTRA_SMALL
     )
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun VehiclesPager(modifier: Modifier, pagerState: PagerState, vehicles: List<Vehicle>) {
+private fun VehiclesPager(
+    pagerState: PagerState,
+    vehicles: List<Vehicle>,
+    modifier: Modifier = Modifier
+) {
     HorizontalPager(
         modifier = modifier,
         count = vehicles.size,
@@ -236,7 +262,7 @@ private fun VehicleImage(
 }
 
 @Composable
-private fun TopBar(modifier: Modifier, vehicle: Vehicle) {
+private fun TopBar(vehicle: Vehicle, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -252,7 +278,7 @@ private fun TopBar(modifier: Modifier, vehicle: Vehicle) {
         )
         Divider(
             modifier = Modifier
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .padding(vertical = PADDING_MEDIUM, horizontal = PADDING_SMALL)
                 .width(1.dp)
                 .height(24.dp),
             color = MaterialTheme.colors.primaryVariant
@@ -262,7 +288,7 @@ private fun TopBar(modifier: Modifier, vehicle: Vehicle) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = PADDING_EXTRA_SMALL),
                 painter = painterResource(R.drawable.notif_gas),
                 tint = MaterialTheme.colors.primary,
                 contentDescription = ""
